@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seating Arrangement - Class 5</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f4f7fa;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      padding: 10px 0;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #4a90e2;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-top: 0;
+      color: #333;
+      text-transform: uppercase;
+    }
+
+    h3 {
+      font-size: 1rem;
+      color: #555;
+      margin-top: 20px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 900px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .line {
+      flex: 1;
+      margin: 0 10px;
+    }
+
+    .line h2 {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #ffffff;
+      background-color: #0072bb;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+    }
+
+    .bench {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f0f8ff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #d1e0e7;
+      transition: background 0.3s;
+    }
+
+    .bench:hover {
+      background: #e1f4ff;
+    }
+
+    .bench .serial {
+      font-weight: bold;
+      color: #0072bb;
+    }
+
+    .bench .names {
+      flex-grow: 1;
+      text-align: center;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto 10px;
+      padding: 12px 20px;
+      font-size: 1.1rem;
+      color: #ffffff;
+      background: #0072bb;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      background: #005f8b;
+    }
+
+    #datePicker {
+      margin: 20px auto;
+      padding: 10px;
+      font-size: 1.1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: border 0.3s;
+    }
+
+    #datePicker:focus {
+      border-color: #0072bb;
+    }
+
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .bench .names {
+        font-size: 0.95rem;
+      }
+
+      .container {
+        flex-direction: column;
+      }
+
+      .line {
+        margin: 10px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Seating Arrangement</h1>
+  <h2>Class 5</h2>
+  <input type="date" id="datePicker" onchange="handleDateChange()" />
+  <div class="container">
+    <div class="line" id="girlsLine">
+      <h2>Girls' Line</h2>
+    </div>
+    <div class="line" id="boysLine1">
+      <h2>Boys' Line 1</h2>
+    </div>
+    <div class="line" id="boysLine2">
+      <h2>Boys' Line 2</h2>
+    </div>
+  </div>
+  <button onclick="shuffleSeats()">Shuffle Seats</button>
+  <h3 class="footer">Developed by Aftab Malik</h3>
+
+  <script>
+    const girls = [
+      "Aarohi D", "Dhairya", "Kranti", 
+      "Alishba", "Aarohi", "Sanchi", 
+      "Iram", "Zara", "Shravani", 
+      "Swara", "Ishita", "Zainab"
+    ];
+
+    const boys = [
+      "Adiyan", "Anas", "Darsh", 
+      "Sarthak", "Utkarsh", "Aditya", 
+      "Dhiraj", "Niraj", "Afif", 
+      "Amanuddin", "Farhanuddin", "Ansh", 
+      "Swaraj", "Naman", "Amaan", 
+      "Tareq"
+    ];
+
+    let currentDate = new Date().toISOString().split("T")[0];
+
+    function generatePairs(seed) {
+      const girlsLine = document.getElementById("girlsLine");
+      const boysLine1 = document.getElementById("boysLine1");
+      const boysLine2 = document.getElementById("boysLine2");
+
+      girlsLine.innerHTML = "<h2>Girls' Line</h2>";
+      boysLine1.innerHTML = "<h2>Boys' Line 1</h2>";
+      boysLine2.innerHTML = "<h2>Boys' Line 2</h2>";
+
+      const shuffledGirls = shuffle([...girls], seed);
+      const shuffledBoys = shuffle([...boys], seed);
+
+      fillBenches(girlsLine, shuffledGirls);
+      fillBenches(boysLine1, shuffledBoys.slice(0, 6));
+      fillBenches(boysLine2, shuffledBoys.slice(6));
+    }
+
+    function fillBenches(line, students) {
+      students.forEach((name, index) => {
+        if (index % 2 === 0) {
+          const pair = students[index + 1] ? `${name} & ${students[index + 1]}` : `${name}`;
+          const bench = document.createElement("div");
+          bench.className = "bench";
+          bench.innerHTML = `<span class="serial">Bench ${Math.floor(index / 2) + 1}</span>
+            <span class="names">${pair}</span>`;
+          line.appendChild(bench);
+        }
+      });
+    }
+
+    function shuffle(array, seed) {
+      const result = [...array];
+      let m = result.length, t, i;
+
+      while (m) {
+        i = Math.floor(random(seed++) * m--);
+        t = result[m];
+        result[m] = result[i];
+        result[i] = t;
+      }
+
+      return result;
+    }
+
+    function random(seed) {
+      const x = Math.sin(seed) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function shuffleSeats() {
+      const seed = new Date().getTime();
+      generatePairs(seed);
+    }
+
+    function handleDateChange() {
+      const dateInput = document.getElementById("datePicker").value;
+      currentDate = dateInput || new Date().toISOString().split("T")[0];
+      const seed = new Date(currentDate).getTime();
+      generatePairs(seed);
+    }
+
+    generatePairs(new Date(currentDate).getTime());
+  </script>
+</body>
+</html>
